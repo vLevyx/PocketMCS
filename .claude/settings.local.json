@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.steelsoldiers.com)",
+      "WebSearch",
+      "Bash(python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(py --version)",
+      "Bash(where python:*)",
+      "WebFetch(domain:radionerds.com)",
+      "WebFetch(domain:hummer-hmmwv.tpub.com)",
+      "Read(//c/Users/Tyler/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/a7887ce0-511e-4f59-a774-89d0da6be70c/cecf1913-0006-4579-b5c9-d4542ddafa6f/skills/pdf/**)",
+      "Bash(python -c \"import pdfplumber; print\\(''pdfplumber ok''\\)\")",
+      "Bash(find C:UsersTylerAppDataRoamingClaudelocal-agent-mode-sessionsskills-plugin -name python* -o -name *.exe)",
+      "WebFetch(domain:trucks25tonv1-2.tpub.com)",
+      "Bash(Get-Content \"C:\\\\Users\\\\Tyler\\\\Documents\\\\PocketMCS\\\\trailer-script.js\")",
+      "Bash(Select-Object -Last 80)",
+      "Bash(Out-String)"
+    ]
+  }
+}

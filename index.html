@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketMCS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-icon">
+                    <img src="images/military-hat.png" alt="Military" class="header-icon-img">
+                </div>
+                <div class="header-text">
+                    <h1 class="title-pmcs">
+                        <span class="pocket">Pocket</span><span class="mcs">MCS</span>
+                    </h1>
+                    <p>Preventive Maintenance Checks and Services &mdash; Select a Platform</p>
+                </div>
+                <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Selection -->
+    <main class="home-main">
+        <div class="container">
+            <div class="home-intro">
+                <p>Select the equipment type to begin your PMCS lookup. Find fault codes, inspection items, and maintenance procedures fast.</p>
+            </div>
+
+            <div class="category-grid">
+
+                <a href="humvee.html" class="category-card">
+                    <div class="category-icon-wrap">
+                        <img src="images/humvee.png" alt="HMMWV" class="category-img">
+                    </div>
+                    <div class="category-body">
+                        <h2 class="category-title">HMMWV</h2>
+                        <p class="category-subtitle">High Mobility Multipurpose Wheeled Vehicle</p>
+                        <p class="category-tm">TM 9-2320-280-10</p>
+                        <ul class="category-models">
+                            <li>M998 / M998A1 Cargo/Troop</li>
+                            <li>M1097 / M1097A2 Heavy</li>
+                            <li>M1025 / M1025A2 Armament</li>
+                            <li>M996 / M997 Ambulance variants</li>
+                            <li>&amp; all other HMMWV configurations</li>
+                        </ul>
+                    </div>
+                    <div class="category-arrow">&#8594;</div>
+                </a>
+
+                <a href="lmtv.html" class="category-card">
+                    <div class="category-icon-wrap">
+                        <img src="images/lmtv.png" alt="LMTV / FMTV" class="category-img">
+                    </div>
+                    <div class="category-body">
+                        <h2 class="category-title">LMTV / FMTV</h2>
+                        <p class="category-subtitle">Light / Family of Medium Tactical Vehicles</p>
+                        <p class="category-tm">TM 9-2320-365-10</p>
+                        <ul class="category-models">
+                            <li>M1078 2.5-ton Cargo</li>
+                            <li>M1079 2.5-ton Van</li>
+                            <li>M1080 2.5-ton Chassis</li>
+                            <li>M1083 5-ton Cargo</li>
+                            <li>&amp; all LMTV/FMTV variants</li>
+                        </ul>
+                    </div>
+                    <div class="category-arrow">&#8594;</div>
+                </a>
+
+                <a href="gen.html" class="category-card">
+                    <div class="category-icon-wrap">
+                        <img src="images/gen.png" alt="Generators" class="category-img">
+                    </div>
+                    <div class="category-body">
+                        <h2 class="category-title">Generators</h2>
+                        <p class="category-subtitle">Tactical Quiet Generators (TQG)</p>
+                        <p class="category-tm">TM 9-6115-749/750/751/752/753-10</p>
+                        <ul class="category-models">
+                            <li>MEP-802A &mdash; 5KW</li>
+                            <li>MEP-803A &mdash; 10KW</li>
+                            <li>MEP-804A &mdash; 15KW</li>
+                            <li>MEP-805A &mdash; 30KW</li>
+                            <li>MEP-806A &mdash; 60KW</li>
+                        </ul>
+                    </div>
+                    <div class="category-arrow">&#8594;</div>
+                </a>
+
+                <a href="trailer.html" class="category-card">
+                    <div class="category-icon-wrap">
+                        <img src="images/trailer.png" alt="Trailers" class="category-img">
+                    </div>
+                    <div class="category-body">
+                        <h2 class="category-title">Trailers</h2>
+                        <p class="category-subtitle">Cargo &amp; Equipment Trailers</p>
+                        <p class="category-tm">TM 9-2330-392-13&amp;P</p>
+                        <ul class="category-models">
+                            <li>M1095 5-Ton Trailer</li>
+                            <li>Brake system &amp; lighting</li>
+                            <li>Tires, wheels &amp; axles</li>
+                            <li>Pintle hook &amp; connections</li>
+                            <li>Cargo body &amp; tarpaulin</li>
+                        </ul>
+                    </div>
+                    <div class="category-arrow">&#8594;</div>
+                </a>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <p class="footer-disclaimer">
+                        <strong>IMPORTANT:</strong> Use official technical manuals for complete procedures.
+                        This tool is for reference only and does not replace official maintenance documentation.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <p class="footer-safety">
+                        <span class="safety-icon">&#9888;</span>
+                        Always follow proper safety procedures and notify unit maintenance for any issues beyond operator level.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <p class="footer-compliance">
+                        Ensure compliance with AR 750-1, AR 385-55, and local unit SOPs for vehicle operations and maintenance.
+                    </p>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-version">PocketMCS v2.0.0 | U.S. Army PMCS Reference</p>
+                    <p class="footer-update">Data accurate as of April 2025</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+<script>
+(function(){
+    if(localStorage.getItem('pocketmcs-darkmode')==='true') document.body.classList.add('dark-mode');
+    var btn=document.getElementById('darkModeToggle');
+    if(btn) btn.addEventListener('click',function(){
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('pocketmcs-darkmode',document.body.classList.contains('dark-mode'));
+        btn.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';
+        btn.title=document.body.classList.contains('dark-mode')?'Switch to Light Mode':'Switch to Dark Mode';
+    });
+    if(localStorage.getItem('pocketmcs-darkmode')==='true'&&btn) btn.textContent='☀️';
+})();
+</script>
+</body>
+
+</html>

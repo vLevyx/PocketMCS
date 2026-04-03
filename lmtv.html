@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketMCS &mdash; LMTV / FMTV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="back-btn" title="Back to Home" aria-label="Back to Home">&#8592;</a>
+                <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+                <div class="header-icon">
+                    <img src="images/military-hat.png" alt="Military Vehicle" class="header-icon-img">
+                </div>
+                <div class="header-text">
+                    <h1 class="title-pmcs">
+                        <span class="pocket">Pocket</span><span class="mcs">MCS</span>
+                    </h1>
+                    <p><a href="https://armypubs.army.mil" target="_blank" rel="noopener noreferrer" class="tm-link">TM 9-2320-365-10</a> | LMTV / FMTV Preventive Maintenance Checks and Services</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search and Filter Controls -->
+    <div class="search-section">
+        <div class="container">
+            <div class="search-controls">
+                <div class="search-input-container">
+                    <input type="text" id="searchInput"
+                        placeholder="Describe the fault (e.g., 'air pressure low', 'tire flat', 'CTI not working')...">
+                    <span class="search-icon">🔍</span>
+                </div>
+
+                <select id="vehicleFilter">
+                    <option value="all">All LMTV/FMTV Variants</option>
+                    <optgroup label="2½-Ton LMTV">
+                        <option value="m1078">M1078 — Cargo</option>
+                        <option value="m1079">M1079 — Van</option>
+                        <option value="m1080">M1080 — Chassis</option>
+                        <option value="m1081">M1081 — Cargo w/Winch</option>
+                    </optgroup>
+                    <optgroup label="5-Ton FMTV">
+                        <option value="m1083">M1083 — Cargo</option>
+                        <option value="m1084">M1084 — Cargo w/MHE</option>
+                        <option value="m1085">M1085 — Long WB Cargo</option>
+                        <option value="m1086">M1086 — Long WB Cargo w/MHE</option>
+                        <option value="m1087">M1087 — Wrecker</option>
+                        <option value="m1088">M1088 — Tractor</option>
+                        <option value="m1089">M1089 — Medium Wrecker</option>
+                    </optgroup>
+                </select>
+
+                <select id="systemFilter">
+                    <option value="all">All Systems</option>
+                    <option value="engine">Engine</option>
+                    <option value="transmission">Transmission</option>
+                    <option value="brakes">Brakes</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="steering">Steering</option>
+                    <option value="suspension">Suspension</option>
+                    <option value="tires/wheels">Tires/Wheels</option>
+                    <option value="drivetrain">Drivetrain</option>
+                    <option value="safety systems">Safety Systems</option>
+                    <option value="fluid systems">Fluid Systems</option>
+                    <option value="fuel system">Fuel System</option>
+                    <option value="cooling system">Cooling System</option>
+                    <option value="body/frame">Body/Frame</option>
+                    <option value="administrative">Administrative</option>
+                </select>
+
+                <select id="intervalFilter">
+                    <option value="all">All Intervals</option>
+                    <option value="before">Before</option>
+                    <option value="during">During</option>
+                    <option value="after">After</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+
+                <button id="intervalInfoBtn" class="info-btn" title="Learn about PMCS intervals">
+                    <img src="images/interval.png" alt="PMCS Intervals" class="interval-icon">
+                    PMCS Intervals
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inspection Strip -->
+    <div class="inspection-strip">
+        <div class="container">
+            <p class="inspection-strip-text"><strong>Motorpool Monday?</strong> Use guided inspection mode to walk through PMCS items step by step.</p>
+            <button class="start-inspection-btn" id="startInspectionBtn">📋 Start Inspection</button>
+        </div>
+    </div>
+
+    <!-- Vehicle Information Display -->
+    <div id="vehicleInfo" class="vehicle-info-section" style="display: none;">
+        <div class="container">
+            <div class="vehicle-info-content">
+                <div class="vehicle-info-header">
+                    <span class="vehicle-icon">
+                        <img src="images/lmtv.png" alt="LMTV / FMTV" class="vehicle-icon-img">
+                    </span>
+                    <div class="vehicle-details">
+                        <h3 id="vehicleTitle">Vehicle Selected</h3>
+                        <p id="vehicleDescription">Vehicle-specific PMCS items are now filtered</p>
+                    </div>
+                    <div class="vehicle-stats">
+                        <span id="applicableItems" class="stat-badge">0 Items</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <main class="main-content">
+        <div class="container">
+            <div id="resultsContainer" class="results-container"></div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">⚠️</div>
+                <p>No items found matching your search criteria.</p>
+                <div class="no-results-suggestions">
+                    <p><strong>Try:</strong></p>
+                    <ul>
+                        <li>Selecting "All LMTV/FMTV Variants" if you filtered by a specific model</li>
+                        <li>Changing your system or interval filters</li>
+                        <li>Using different search terms</li>
+                        <li>Checking for typos in your search</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Copy Modal -->
+    <div id="copyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ready for DA Form 5988-E</h3>
+                <span class="close-btn" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="copy-content">
+                    <div class="copy-field"><label>Item Number:</label><div id="modalItemNumber" class="copy-value"></div></div>
+                    <div class="copy-field"><label>Location/Item:</label><div id="modalLocation" class="copy-value"></div></div>
+                    <div class="copy-field"><label>Interval:</label><div id="modalInterval" class="copy-value"></div></div>
+                    <div class="copy-field"><label>Mission Capable Status:</label><div id="modalStatus" class="copy-value"></div></div>
+                    <div class="copy-field"><label>Applicable Vehicle:</label><div id="modalVehicle" class="copy-value"></div></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="copyToClipboard" class="btn btn-primary">Copy to Clipboard</button>
+                <button id="closeModalBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PMCS Intervals Modal -->
+    <div id="intervalInfoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>PMCS Interval Guidelines</h3>
+                <span class="close-btn" id="closeIntervalModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="interval-info-content">
+                    <p class="intro-text">PMCS involves checks at various intervals to ensure vehicle readiness and safety:</p>
+                    <div class="interval-item"><div class="interval-badge interval-before">Before</div><div class="interval-description"><strong>Before Operation Checks</strong><p>Performed before moving the vehicle. Identify safety hazards and mission-critical defects before operation begins.</p></div></div>
+                    <div class="interval-item"><div class="interval-badge interval-during">During</div><div class="interval-description"><strong>During Operation Checks</strong><p>Monitor gauges, listen for unusual sounds, and observe vehicle performance during operation.</p></div></div>
+                    <div class="interval-item"><div class="interval-badge interval-after">After</div><div class="interval-description"><strong>After Operation Checks</strong><p>Conducted after operation. Check for new leaks, damage, and prepare for next operation.</p></div></div>
+                    <div class="interval-item"><div class="interval-badge interval-weekly">Weekly</div><div class="interval-description"><strong>Weekly Checks</strong><p>Performed once every 7 days. More detailed inspections to prevent breakdowns.</p></div></div>
+                    <div class="interval-item"><div class="interval-badge interval-monthly">Monthly</div><div class="interval-description"><strong>Monthly Checks</strong><p>Conducted once every 30 days. Comprehensive inspections for long-term vehicle health.</p></div></div>
+                    <div class="note-section"><p><strong>Note:</strong> Always refer to TM 9-2320-365-10 for complete PMCS requirements.</p></div>
+                </div>
+            </div>
+            <div class="modal-footer"><button id="closeIntervalModalBtn" class="btn btn-primary">Got It!</button></div>
+        </div>
+    </div>
+
+    <!-- Vehicle Info Modal -->
+    <div id="vehicleInfoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Vehicle Information</h3>
+                <span class="close-btn" id="closeVehicleInfoModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="vehicleInfoDetails" class="vehicle-info-details"></div>
+            </div>
+            <div class="modal-footer"><button id="closeVehicleInfoModalBtn" class="btn btn-primary">Close</button></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <p class="footer-reference">
+                        <strong>Reference:</strong>
+                        <a href="https://armypubs.army.mil" target="_blank" rel="noopener noreferrer" class="footer-link">TM 9-2320-365-10</a>
+                    </p>
+                    <p class="footer-disclaimer">
+                        <strong>IMPORTANT:</strong> Use official technical manuals for complete procedures.
+                        This tool is for reference only and does not replace official maintenance documentation.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <p class="footer-safety">
+                        <span class="safety-icon">&#9888;</span>
+                        Always follow proper safety procedures and notify unit maintenance for any issues beyond operator level.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <p class="footer-compliance">
+                        Ensure compliance with AR 750-1, AR 385-55, and local unit SOPs for vehicle operations and maintenance.
+                    </p>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-version">PocketMCS v2.0.0 | For U.S. Army LMTV / FMTV Fleet</p>
+                    <p class="footer-update">Data accurate as of April 2025</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inspection Setup Modal -->
+    <div id="inspectionSetupModal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="inspSetupTitle">
+        <div class="modal-content" style="max-width:560px;">
+            <div class="modal-header">
+                <h3 id="inspSetupTitle">📋 Start PMCS Inspection</h3>
+                <button class="close-btn" id="closeInspSetup" aria-label="Close inspection setup">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:4px;color:#555;">Select which intervals to include. Guided inspection always uses Table 2-1 (All Models).</p>
+                <div class="insp-setup-options">
+                    <button class="insp-setup-btn" data-intervals="before">
+                        <span class="insp-setup-icon">🔍</span>
+                        <strong>Before Operation</strong>
+                        <span>Daily check before use</span>
+                    </button>
+                    <button class="insp-setup-btn" data-intervals="before,weekly">
+                        <span class="insp-setup-icon">📅</span>
+                        <strong>Before + Weekly</strong>
+                        <span>Motorpool Monday</span>
+                    </button>
+                    <button class="insp-setup-btn" data-intervals="before,weekly,monthly">
+                        <span class="insp-setup-icon">📆</span>
+                        <strong>Before + Weekly + Monthly</strong>
+                        <span>First-of-month full inspection</span>
+                    </button>
+                    <button class="insp-setup-btn" data-intervals="after">
+                        <span class="insp-setup-icon">✅</span>
+                        <strong>After Operation</strong>
+                        <span>Post-mission check</span>
+                    </button>
+                </div>
+                <div class="insp-setup-note">
+                    💡 Tip: Items are shown in TM sequence order. Mark each item PASS, DEFICIENCY, or SKIP. A summary with all deficiencies is shown at the end.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inspection Overlay (full-screen guided mode) -->
+    <div id="inspectionMode" class="inspection-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="inspectionIntervalLabel">
+        <div class="inspection-topbar">
+            <div class="inspection-topbar-row">
+                <div class="inspection-title-row">
+                    <button class="exit-inspection-btn" id="exitInspectionBtn" aria-label="Exit inspection mode">✕ Exit</button>
+                    <span id="inspectionIntervalLabel" class="insp-interval-pill">BEFORE</span>
+                </div>
+                <span id="inspectionCounter" class="insp-counter">Item 1 of 0</span>
+            </div>
+            <div class="insp-progress-bar">
+                <div id="inspectionProgressFill" class="insp-progress-fill" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="inspection-content" id="inspectionContent">
+            <!-- Item rendered by JS -->
+        </div>
+        <div class="inspection-actions" id="inspectionActions">
+            <button class="insp-action-btn insp-pass" id="inspPass">
+                <span class="insp-btn-icon">✅</span>
+                <span class="insp-btn-label">PASS</span>
+            </button>
+            <button class="insp-action-btn insp-deficiency" id="inspDeficiency">
+                <span class="insp-btn-icon">⚠️</span>
+                <span class="insp-btn-label">DEFICIENCY</span>
+            </button>
+            <button class="insp-action-btn insp-skip" id="inspSkip">
+                <span class="insp-btn-icon">⏭</span>
+                <span class="insp-btn-label">SKIP</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="lmtv-script.js"></script>
+</body>
+
+</html>
