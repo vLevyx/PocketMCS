@@ -2830,22 +2830,37 @@ button.fault-tag {
 .insp-back-btn {
     flex: none;
     min-width: 44px;
-    min-height: 44px;
-    padding: 0 12px;
+    height: 44px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border-radius: var(--radius-pill);
     background: rgba(241, 228, 199, 0.12);
     border: 1px solid rgba(241, 228, 199, 0.2);
     color: var(--on-chrome);
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    font-weight: 700;
-    line-height: 1;
     white-space: nowrap;
+}
+
+/* CSS-drawn chevron: centers exactly, independent of font metrics.
+   translateX nudges the rotated shape to its optical center. */
+.insp-back-icon {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-left: 2.5px solid currentColor;
+    border-bottom: 2.5px solid currentColor;
+    border-radius: 1px;
+    transform: translateX(2px) rotate(45deg);
 }
 
 .insp-back-label {
     display: none;
+    font-family: var(--font-display);
     font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
