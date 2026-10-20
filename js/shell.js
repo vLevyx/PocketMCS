@@ -35,7 +35,7 @@
             btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
         }
         document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
-            meta.setAttribute('content', isDark ? '#0d110d' : '#1e3424');
+            meta.setAttribute('content', isDark ? '#0e0f0d' : '#221F20');
         });
     }
 

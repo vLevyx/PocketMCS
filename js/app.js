@@ -111,34 +111,75 @@
 
     const nfmcStatus = PMCS.nfmcStatus;
 
+    const STATUS_TEXT = { deadline: 'Deadline item', conditional: 'Conditional', na: 'Non-deadline' };
+
     function nfmcBadge(nfmc) {
         const status = nfmcStatus(nfmc);
-        if (status === 'deadline') return '<span class="nfmc-badge nfmc-deadline">🔴 Deadline Item</span>';
-        if (status === 'conditional') return '<span class="nfmc-badge nfmc-conditional">🟡 Conditional</span>';
-        return '<span class="nfmc-badge nfmc-ok">🟢 Non-Deadline</span>';
+        return `<span class="nfmc-badge nfmc-${status}"><span class="status-glyph status-${status}" aria-hidden="true"></span>${STATUS_TEXT[status]}</span>`;
     }
 
     const STATUS_LABEL = { deadline: 'Deadline item', conditional: 'Conditional', na: 'Non-deadline' };
 
-    function procedureClass(procedure) {
-        const lower = procedure.toLowerCase();
-        if (lower.includes('warning')) return 'warning';
-        if (lower.includes('caution')) return 'caution';
-        if (lower.includes('note')) return 'note';
-        return '';
+    const CALLOUT_LABEL = { WARNING: '⚠️ Warning', CAUTION: 'Caution', NOTE: 'Note' };
+    const CREW_ROLE = /^((?:DRIVER|MAINTAINER|OPERATOR|CREW)(?:\s*\/\s*(?:DRIVER|MAINTAINER|OPERATOR|CREW))*)\b\s*/;
+
+    function textBlock(text) {
+        const step = text.match(/^([a-z]|\d{1,2})[.)]\s+([\s\S]*)$/);
+        return step
+            ? `<p class="proc-step"><span class="proc-step-key">${esc(step[1])}.</span><span>${esc(step[2])}</span></p>`
+            : `<p>${esc(text)}</p>`;
     }
 
     function formatProcedure(text) {
-        return esc(text)
-            .replace(/WARNING/g, '<strong class="proc-warning">WARNING</strong>')
-            .replace(/CAUTION/g, '<strong class="proc-caution">CAUTION</strong>')
-            .replace(/\bNOTE\b/g, '<strong class="proc-note">NOTE</strong>')
-            .replace(/DRIVER/g, '<strong>DRIVER</strong>')
-            .split('\n')
-            .map(line => line.trim())
-            .filter(Boolean)
-            .map(line => `<p>${line}</p>`)
-            .join('');
+        const html = [];
+        text.split('\n').map(line => line.trim()).filter(Boolean).forEach(line => {
+            const role = line.match(CREW_ROLE);
+            if (role) {
+                html.push(`<p class="proc-role">${esc(role[1].replace(/\s+/g, ''))}</p>`);
+                line = line.slice(role[0].length).trim();
+            }
+            const parts = line.split(/\b(WARNING|CAUTION|NOTE)\b/);
+            if (parts[0].trim()) html.push(textBlock(parts[0].trim()));
+            for (let i = 1; i < parts.length; i += 2) {
+                const kind = parts[i];
+                const body = (parts[i + 1] || '').trim();
+                html.push(`<div class="callout callout-${kind.toLowerCase()}" role="note"><span class="callout-label">${CALLOUT_LABEL[kind]}</span>${body ? `<p>${esc(body)}</p>` : ''}</div>`);
+            }
+        });
+        return html.join('');
+    }
+
+    const FAULTS_SHOWN = 6;
+
+    function faultsBlock(item, interactive) {
+        if (!item.commonFaults || !item.commonFaults.length) return '';
+        const shown = interactive ? FAULTS_SHOWN : item.commonFaults.length;
+        const extra = item.commonFaults.slice(shown);
+        const tag = interactive
+            ? f => `<button type="button" class="fault-tag" data-fault="${esc(f)}" title="Search “${esc(f)}”">${esc(f)}</button>`
+            : f => `<span class="fault-tag">${esc(f)}</span>`;
+        return `
+            <section class="detail-section">
+                <h4 class="detail-label">🔧 Common faults${interactive ? '<span class="detail-hint">Tap to search</span>' : ''}</h4>
+                <div class="common-faults">${item.commonFaults.slice(0, shown).map(tag).join('')}${extra.length ? `<span class="faults-extra" hidden>${extra.map(tag).join('')}</span><button type="button" class="fault-more" data-action="more-faults">+${extra.length} more</button>` : ''}</div>
+            </section>`;
+    }
+
+    function procedureBlock(item) {
+        return `
+            <section class="detail-section">
+                <h4 class="detail-label">📋 Crew member procedure</h4>
+                <div class="procedure-content">${formatProcedure(item.procedure)}</div>
+            </section>`;
+    }
+
+    function nfmcBlock(item) {
+        const status = nfmcStatus(item.notFullyMissionCapable);
+        return `
+            <section class="nfmc-block nfmc-block-${status}">
+                <h4 class="nfmc-block-head"><span class="status-glyph status-${status}" aria-hidden="true"></span>Not fully mission capable if</h4>
+                <p>${esc(item.notFullyMissionCapable)}</p>
+            </section>`;
     }
 
     function makeSection(key, title) {
@@ -193,30 +234,17 @@
         const item = row.item;
         const table = tableOf(item);
         const specific = platform.specificTo ? platform.specificTo(item) : null;
-        const isNA = item.notFullyMissionCapable.trim() === 'N/A';
-        const faults = item.commonFaults && item.commonFaults.length ? `
-            <div class="procedure-section">
-                <div class="procedure-title">🔧 Common Faults</div>
-                <div class="procedure-content common-faults">${item.commonFaults.map(f => `<span class="fault-tag">${esc(f)}</span>`).join('')}</div>
-            </div>` : '';
         row.inner.innerHTML = `
             <div class="row-detail">
                 <div class="row-badges">
                     <span class="tm-ref-badge">${esc(platform.tm)}${table ? ` · Table ${esc(table)}` : ''}</span>
-                    ${item.system ? `<span class="system-badge">${esc(item.system)}</span>` : ''}
-                    <span class="interval-badge interval-${intervalOf(item)}">${esc(item.interval)}</span>
                     ${nfmcBadge(item.notFullyMissionCapable)}
-                    ${specific ? `<span class="vehicle-badge">${esc(specific)}</span>` : ''}
+                    ${item.system ? `<span class="system-badge">${esc(item.system)}</span>` : ''}
+                    ${specific ? `<span class="vehicle-badge">${esc(specific)} only</span>` : ''}
                 </div>
-                ${faults}
-                <div class="procedure-section">
-                    <div class="procedure-title">📋 Crew Member Procedure</div>
-                    <div class="procedure-content ${procedureClass(item.procedure)}">${formatProcedure(item.procedure)}</div>
-                </div>
-                <div class="procedure-section">
-                    <div class="procedure-title">⚠️ Not Fully Mission Capable If</div>
-                    <div class="procedure-content ${isNA ? 'mission-capable na' : 'mission-capable'}"><p>${esc(item.notFullyMissionCapable)}</p></div>
-                </div>
+                ${faultsBlock(item, true)}
+                ${procedureBlock(item)}
+                ${nfmcBlock(item)}
             </div>`;
         row.rendered = true;
     }
@@ -1006,32 +1034,21 @@
     }
 
     function inspectionCard(item) {
-        const isNA = item.notFullyMissionCapable.trim() === 'N/A';
-        const faults = item.commonFaults && item.commonFaults.length ? `
-            <div class="insp-faults">
-                <div class="procedure-title">🔧 Common Faults</div>
-                <div class="procedure-content common-faults">${item.commonFaults.map(f => `<span class="fault-tag">${esc(f)}</span>`).join('')}</div>
-            </div>` : '';
         return `<div class="insp-card">
             <div class="insp-card-header">
-                <div class="insp-item-meta">
-                    <span class="item-number">${esc(displayNumber(item))}</span>
-                    <span class="tm-ref-badge">${esc(platform.tm)}</span>
-                    ${item.system ? `<span class="system-badge">${esc(item.system)}</span>` : ''}
-                    <span class="interval-badge interval-${intervalOf(item)}">${esc(item.interval)}</span>
+                <span class="row-num insp-plate">${esc(displayNumber(item))}</span>
+                <div class="insp-card-heading">
+                    <h2 class="insp-location">${esc(item.location)}</h2>
+                    <div class="row-badges">
+                        <span class="interval-badge interval-${intervalOf(item)}">${esc(item.interval)}</span>
+                        ${nfmcBadge(item.notFullyMissionCapable)}
+                        ${item.system ? `<span class="system-badge">${esc(item.system)}</span>` : ''}
+                    </div>
                 </div>
-                ${nfmcBadge(item.notFullyMissionCapable)}
             </div>
-            <h2 class="insp-location">${esc(item.location)}</h2>
-            ${faults}
-            <div class="insp-procedure">
-                <div class="procedure-title">📋 Procedure</div>
-                <div class="procedure-content ${procedureClass(item.procedure)}">${formatProcedure(item.procedure)}</div>
-            </div>
-            <div class="insp-nfmc">
-                <div class="procedure-title">⚠️ Not Fully Mission Capable If</div>
-                <div class="procedure-content ${isNA ? 'mission-capable na' : 'mission-capable'}"><p>${esc(item.notFullyMissionCapable)}</p></div>
-            </div>
+            ${procedureBlock(item)}
+            ${nfmcBlock(item)}
+            ${faultsBlock(item, false)}
         </div>`;
     }
 
@@ -1047,7 +1064,7 @@
         const passes = insp.results.filter(r => r.status === 'pass');
         const skips = insp.results.filter(r => r.status === 'skip');
         inspEl('inspectionActions').style.display = 'none';
-        inspEl('inspectionCounter').textContent = 'Inspection Complete';
+        inspEl('inspectionCounter').textContent = `${insp.results.length} items checked`;
         inspEl('inspectionProgressFill').style.width = '100%';
         inspEl('inspectionIntervalLabel').textContent = 'COMPLETE';
         const defHtml = deficiencies.length
@@ -1110,11 +1127,19 @@
     function bindInteractions() {
         els.results.addEventListener('click', (e) => {
             const head = e.target.closest('.row-head');
-            const action = e.target.closest('[data-action]');
             const rowEl = e.target.closest('.item-row');
             if (!rowEl) return;
             const row = rows.get(rowEl.dataset.key);
-            if (head) {
+            const fault = e.target.closest('.fault-tag[data-fault]');
+            const more = e.target.closest('[data-action="more-faults"]');
+            if (more) {
+                more.previousElementSibling.hidden = false;
+                more.remove();
+            } else if (fault) {
+                shell.haptic(4);
+                setQuery(fault.dataset.fault, true);
+                scrollListToTop();
+            } else if (head) {
                 const open = !row.el.classList.contains('is-open');
                 setExpanded(row, open, { reveal: open });
                 if (open && state.q.trim()) saveRecent(state.q);

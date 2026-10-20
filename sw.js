@@ -4,7 +4,7 @@
 // Bump VERSION whenever any precached file changes.
 // ========================================
 
-const VERSION = 'pocketmcs-v3.0.1';
+const VERSION = 'pocketmcs-v4.0.0';
 const FONT_CACHE = 'pocketmcs-fonts';
 
 const PRECACHE = [
@@ -14,8 +14,9 @@ const PRECACHE = [
     'lmtv.html',
     'gen.html',
     'trailer.html',
-    'styles.css',
-    'ui.css',
+    'css/tokens.css',
+    'css/base.css',
+    'css/components.css',
     'manifest.webmanifest',
     'js/search.js',
     'js/shell.js',

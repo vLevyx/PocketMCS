@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>PocketMCS</title>
     <meta name="description" content="Pocket PMCS reference for HMMWV, LMTV/FMTV, Tactical Quiet Generators and M1095 trailers — find item numbers fast.">
-    <meta name="theme-color" content="#1e3424">
+    <meta name="theme-color" content="#221F20">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,26 +14,29 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
 </head>
 
 <body class="home-page">
-    <script>try{var d=localStorage.getItem('pocketmcs-darkmode');if(d==='true'||(d===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches))document.body.classList.add('dark-mode')}catch(e){}</script>
-    <!-- Header -->
-    <header class="header">
+    <script>try{if(localStorage.getItem('pocketmcs-darkmode')==='true')document.body.classList.add('dark-mode')}catch(e){}</script>
+    <header class="masthead masthead-home">
         <div class="container">
-            <div class="header-content">
-                <div class="header-icon">
-                    <img src="images/military-hat.png" alt="Military" class="header-icon-img">
-                </div>
-                <div class="header-text">
-                    <h1 class="title-pmcs">
-                        <span class="pocket">Pocket</span><span class="mcs">MCS</span>
-                    </h1>
-                    <p>Preventive Maintenance Checks and Services &mdash; Select a Platform</p>
-                </div>
-                <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+            <div class="masthead-bar">
+                <a href="index.html" class="wordmark" aria-label="PocketMCS home" aria-current="page">
+                    <img src="images/military-hat.png" alt="" class="wordmark-icon">
+                    <span class="wordmark-text">Pocket<b>MCS</b></span>
+                </a>
+                <button id="darkModeToggle" class="masthead-btn dark-mode-toggle" type="button" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+            </div>
+            <div class="masthead-hero">
+                <p class="masthead-eyebrow">U.S. Army · Operator Level</p>
+                <h1 class="masthead-title">PMCS Reference</h1>
+                <p class="masthead-sub">Item numbers, procedures and deadline criteria — offline, in your pocket.</p>
             </div>
         </div>
     </header>
@@ -41,10 +44,6 @@
     <!-- Category Selection -->
     <main class="home-main">
         <div class="container">
-            <div class="home-intro">
-                <p>Select the equipment type to begin your PMCS lookup. Find fault codes, inspection items, and maintenance procedures fast.</p>
-            </div>
-
             <div class="home-search" role="search">
                 <div class="searchbar">
                     <span class="searchbar-icon" aria-hidden="true">🔍</span>
@@ -57,16 +56,17 @@
 
             <div class="home-results" id="globalResults" aria-live="polite" hidden></div>
 
-            <div class="category-grid">
+            <h2 class="home-section-label" id="equipmentLabel">Select equipment</h2>
+            <div class="category-grid" aria-labelledby="equipmentLabel">
 
                 <a href="humvee.html" class="category-card">
                     <div class="category-icon-wrap">
                         <img src="images/humvee.png" alt="HMMWV" class="category-img">
                     </div>
                     <div class="category-body">
-                        <h2 class="category-title">HMMWV</h2>
+                        <h3 class="category-title">HMMWV</h3>
                         <p class="category-subtitle">High Mobility Multipurpose Wheeled Vehicle</p>
-                        <p class="category-tm">TM 9-2320-280-10</p>
+                        <p class="category-meta"><span class="category-tm">TM 9-2320-280-10</span><span class="category-count">80 items</span></p>
                         <ul class="category-models">
                             <li>M998 / M998A1 Cargo/Troop</li>
                             <li>M1097 / M1097A2 Heavy</li>
@@ -83,9 +83,9 @@
                         <img src="images/lmtv.png" alt="LMTV / FMTV" class="category-img">
                     </div>
                     <div class="category-body">
-                        <h2 class="category-title">LMTV / FMTV</h2>
+                        <h3 class="category-title">LMTV / FMTV</h3>
                         <p class="category-subtitle">Light / Family of Medium Tactical Vehicles</p>
-                        <p class="category-tm">TM 9-2320-365-10</p>
+                        <p class="category-meta"><span class="category-tm">TM 9-2320-365-10</span><span class="category-count">108 items</span></p>
                         <ul class="category-models">
                             <li>M1078 2.5-ton Cargo</li>
                             <li>M1079 2.5-ton Van</li>
@@ -102,9 +102,9 @@
                         <img src="images/gen.png" alt="Generators" class="category-img">
                     </div>
                     <div class="category-body">
-                        <h2 class="category-title">Generators</h2>
+                        <h3 class="category-title">Generators</h3>
                         <p class="category-subtitle">Tactical Quiet Generators (TQG)</p>
-                        <p class="category-tm">TM 9-6115-749/750/751/752/753-10</p>
+                        <p class="category-meta"><span class="category-tm">TM 9-6115-749 thru 753-10</span><span class="category-count">50 items</span></p>
                         <ul class="category-models">
                             <li>MEP-802A &mdash; 5KW</li>
                             <li>MEP-803A &mdash; 10KW</li>
@@ -121,9 +121,9 @@
                         <img src="images/trailer.png" alt="Trailers" class="category-img">
                     </div>
                     <div class="category-body">
-                        <h2 class="category-title">Trailers</h2>
+                        <h3 class="category-title">Trailers</h3>
                         <p class="category-subtitle">Cargo &amp; Equipment Trailers</p>
-                        <p class="category-tm">TM 9-2330-392-13&amp;P</p>
+                        <p class="category-meta"><span class="category-tm">TM 9-2330-392-13&amp;P</span><span class="category-count">16 items</span></p>
                         <ul class="category-models">
                             <li>M1095 5-Ton Trailer</li>
                             <li>Brake system &amp; lighting</li>
@@ -142,28 +142,11 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <p class="footer-disclaimer">
-                        <strong>IMPORTANT:</strong> Use official technical manuals for complete procedures.
-                        This tool is for reference only and does not replace official maintenance documentation.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <p class="footer-safety">
-                        <span class="safety-icon">&#9888;</span>
-                        Always follow proper safety procedures and notify unit maintenance for any issues beyond operator level.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <p class="footer-compliance">
-                        Ensure compliance with AR 750-1, AR 385-55, and local unit SOPs for vehicle operations and maintenance.
-                    </p>
-                </div>
-                <div class="footer-bottom">
-                    <p class="footer-version">PocketMCS v3.0.0 | U.S. Army PMCS Reference</p>
-                    <p class="footer-update">Data accurate as of April 2025</p>
-                </div>
+            <div class="footer-card">
+                <p class="footer-safety"><span class="safety-icon" aria-hidden="true">⚠️</span><span>Always follow proper safety procedures and notify unit maintenance for any issues beyond operator level.</span></p>
+                <p class="footer-disclaimer"><strong>Reference only.</strong> Use official technical manuals for complete procedures. This tool does not replace official maintenance documentation.</p>
+                <p class="footer-compliance">Ensure compliance with AR 750-1, AR 385-55, and local unit SOPs for vehicle operations and maintenance.</p>
+                <p class="footer-meta"><span>PocketMCS v4.0.0 | U.S. Army PMCS Reference</span><span>Data accurate as of April 2025</span></p>
             </div>
         </div>
     </footer>

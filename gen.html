@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>PocketMCS &mdash; Generators</title>
     <meta name="description" content="Tactical Quiet Generator PMCS lookup — item numbers, procedures and deadline criteria.">
-    <meta name="theme-color" content="#1e3424">
+    <meta name="theme-color" content="#221F20">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,29 +14,32 @@
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icons/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
 </head>
 
 <body class="equipment-page" data-platform="gen">
-    <script>try{var d=localStorage.getItem('pocketmcs-darkmode');if(d==='true'||(d===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches))document.body.classList.add('dark-mode')}catch(e){}</script>
+    <script>try{if(localStorage.getItem('pocketmcs-darkmode')==='true')document.body.classList.add('dark-mode')}catch(e){}</script>
     <a class="skip-link" href="#results">Skip to PMCS items</a>
 
-    <!-- Header -->
-    <header class="header">
+    <header class="masthead">
         <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="back-btn" title="Back to Home" aria-label="Back to Home">&#8592;</a>
-                <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-                <div class="header-icon">
-                    <img src="images/military-hat.png" alt="Military Vehicle" class="header-icon-img">
-                </div>
-                <div class="header-text">
-                    <h1 class="title-pmcs">
-                        <span class="pocket">Pocket</span><span class="mcs">MCS</span>
-                    </h1>
-                    <p>TM 9-6115-749/750/751/752/753-10 | TQG Generator Preventive Maintenance Checks and Services</p>
-                </div>
+            <div class="masthead-bar">
+                <a href="index.html" class="masthead-btn back-btn" title="Back to Home" aria-label="Back to Home">&#8592;</a>
+                <a href="index.html" class="wordmark" aria-label="PocketMCS home">
+                    <img src="images/military-hat.png" alt="" class="wordmark-icon">
+                    <span class="wordmark-text">Pocket<b>MCS</b></span>
+                </a>
+                <button id="darkModeToggle" class="masthead-btn dark-mode-toggle" type="button" title="Toggle Dark Mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+            </div>
+            <div class="masthead-hero">
+                <p class="masthead-eyebrow">Operator PMCS</p>
+                <h1 class="masthead-title">Generators</h1>
+                <p class="masthead-sub"><span class="tm-tag">TM 9-6115-749/750/751/752/753-10</span><span class="masthead-dot" aria-hidden="true">·</span>Tactical Quiet Generators — MEP-802A to 806A</p>
             </div>
         </div>
     </header>
@@ -130,32 +133,11 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <p class="footer-reference">
-                        <strong>References:</strong>
-                        TM 9-6115-749-10 &bull; TM 9-6115-750-10 &bull; TM 9-6115-751-10 &bull; TM 9-6115-752-10 &bull; TM 9-6115-753-10
-                    </p>
-                    <p class="footer-disclaimer">
-                        <strong>IMPORTANT:</strong> Use official technical manuals for complete procedures.
-                        This tool is for reference only and does not replace official maintenance documentation.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <p class="footer-safety">
-                        <span class="safety-icon">&#9888;</span>
-                        Always ground generator before operation. Never operate in enclosed spaces without ventilation — carbon monoxide hazard.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <p class="footer-compliance">
-                        Ensure compliance with AR 750-1 and local unit SOPs for generator operations and maintenance.
-                    </p>
-                </div>
-                <div class="footer-bottom">
-                    <p class="footer-version">PocketMCS v3.0.0 | For U.S. Army TQG Generator Fleet</p>
-                    <p class="footer-update">Data accurate as of April 2025</p>
-                </div>
+            <div class="footer-card">
+                <p class="footer-safety"><span class="safety-icon" aria-hidden="true">⚠️</span><span>Always ground generator before operation. Never operate in enclosed spaces without ventilation — carbon monoxide hazard.</span></p>
+                <p class="footer-disclaimer"><strong>Reference only.</strong> Use official technical manuals for complete procedures. This tool does not replace official maintenance documentation.</p>
+                <p class="footer-compliance">Ensure compliance with AR 750-1 and local unit SOPs for generator operations and maintenance.</p>
+                <p class="footer-meta"><span>TM 9-6115-749-10 &bull; TM 9-6115-750-10 &bull; TM 9-6115-751-10 &bull; TM 9-6115-752-10 &bull; TM 9-6115-753-10</span><span>PocketMCS v4.0.0 | For U.S. Army TQG Generator Fleet</span><span>Data accurate as of April 2025</span></p>
             </div>
         </div>
     </footer>
@@ -168,7 +150,7 @@
                 <button class="close-btn" id="closeInspSetup" aria-label="Close inspection setup">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom:4px;color:#555;">Select which intervals to include. Current vehicle/system filters will apply.</p>
+                <p class="modal-intro">Select which intervals to include. Current vehicle/system filters will apply.</p>
                 <div class="insp-setup-options">
                     <button class="insp-setup-btn" data-intervals="before">
                         <span class="insp-setup-icon">🔍</span>
