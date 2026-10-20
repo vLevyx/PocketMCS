@@ -1076,17 +1076,6 @@ kbd {
 .proc-note { color: #2d7fc4; }
 .dark-mode .proc-note { color: #8cc4ef; }
 
-.row-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 4px;
-}
-
-.row-actions .copy-btn {
-    flex: 1 1 200px;
-    margin: 0;
-}
 
 .item-row.is-pulsing .row-head::after {
     animation: row-pulse 1.6s var(--ease-decel);

@@ -39,7 +39,7 @@
     const intervalOf = item => item.interval.toLowerCase();
 
     // ----------------------------------------
-    // State (mirrored to the URL so refresh/share keep context)
+    // State (mirrored to the URL so refresh keeps context)
     // ----------------------------------------
 
     const state = { q: '', interval: 'all', system: 'all', variant: 'all' };
@@ -98,7 +98,6 @@
         noResults: document.getElementById('noResults'),
         rail: document.getElementById('indexRail'),
         fab: document.getElementById('backToTop'),
-        copyModal: document.getElementById('copyModal'),
         intervalModal: document.getElementById('intervalInfoModal'),
         vehicleModal: document.getElementById('vehicleInfoModal')
     };
@@ -217,10 +216,6 @@
                 <div class="procedure-section">
                     <div class="procedure-title">⚠️ Not Fully Mission Capable If</div>
                     <div class="procedure-content ${isNA ? 'mission-capable na' : 'mission-capable'}"><p>${esc(item.notFullyMissionCapable)}</p></div>
-                </div>
-                <div class="row-actions">
-                    <button class="copy-btn" type="button" data-action="copy">📋 Copy for 5988 Form</button>
-                    <button class="btn-tonal" type="button" data-action="share">Share link</button>
                 </div>
             </div>`;
         row.rendered = true;
@@ -926,57 +921,12 @@
     }
 
     // ----------------------------------------
-    // Copy for DA Form 5988-E + share
+    // Info modals
     // ----------------------------------------
 
-    let copyItem = null;
-
-    function variantName() {
-        return state.variant !== 'all' && platform.variantInfo[state.variant]
-            ? platform.variantInfo[state.variant].name : platform.allVariantsLabel;
-    }
-
-    function copyTextFor(item) {
-        const table = tableOf(item);
-        return [
-            `${platform.tm} PMCS`,
-            table ? `Table: ${table}` : null,
-            `Item Number: ${displayNumber(item)}`,
-            `Location/Item: ${item.location}`,
-            `Interval: ${item.interval}`,
-            `${platform.variantNoun}: ${variantName()}`,
-            `Not Fully Mission Capable If: ${item.notFullyMissionCapable}`
-        ].filter(Boolean).join('\n');
-    }
-
-    function showCopyModal(item) {
-        copyItem = item;
-        const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
-        set('modalItemNumber', displayNumber(item) + (tableOf(item) ? `  (Table ${tableOf(item)})` : ''));
-        set('modalLocation', item.location);
-        set('modalInterval', item.interval);
-        set('modalStatus', item.notFullyMissionCapable);
-        set('modalVehicle', variantName());
-        shell.openModal(els.copyModal, document.getElementById('copyToClipboard'));
-    }
-
     function bindModals() {
-        shell.bindModal(els.copyModal, ['#closeModal', '#closeModalBtn']);
         shell.bindModal(els.intervalModal, ['#closeIntervalModal', '#closeIntervalModalBtn']);
         shell.bindModal(els.vehicleModal, ['#closeVehicleInfoModal', '#closeVehicleInfoModalBtn']);
-        const copyBtn = document.getElementById('copyToClipboard');
-        copyBtn?.addEventListener('click', () => {
-            if (!copyItem) return;
-            shell.copyText(copyTextFor(copyItem)).then(ok => {
-                if (!ok) { shell.snackbar('Copy failed — select the text manually'); return; }
-                const label = copyBtn.textContent;
-                copyBtn.textContent = 'Copied ✓';
-                copyBtn.disabled = true;
-                shell.haptic(8);
-                shell.snackbar(`Item ${displayNumber(copyItem)} copied — ready for DA Form 5988-E`);
-                setTimeout(() => { copyBtn.textContent = label; copyBtn.disabled = false; }, 1600);
-            });
-        });
     }
 
     function showVariantInfo() {
@@ -989,16 +939,6 @@
             <h4>Key Features:</h4><ul>${info.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
             ${models ? `<h4>Models:</h4><ul>${models.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : ''}`;
         shell.openModal(els.vehicleModal, document.getElementById('closeVehicleInfoModalBtn'));
-    }
-
-    function shareItem(item) {
-        const url = `${location.origin}${location.pathname}#item-${encodeURIComponent(item.itemNumber)}`;
-        const title = `${platform.name} PMCS item ${displayNumber(item)} — ${item.location}`;
-        if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
-            navigator.share({ title, url }).catch(() => {});
-            return;
-        }
-        shell.copyText(url).then(ok => shell.snackbar(ok ? 'Link copied' : 'Could not copy link'));
     }
 
     // ----------------------------------------
@@ -1178,10 +1118,6 @@
                 const open = !row.el.classList.contains('is-open');
                 setExpanded(row, open, { reveal: open });
                 if (open && state.q.trim()) saveRecent(state.q);
-            } else if (action && action.dataset.action === 'copy') {
-                showCopyModal(row.item);
-            } else if (action && action.dataset.action === 'share') {
-                shareItem(row.item);
             }
         });
 
