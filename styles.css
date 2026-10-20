@@ -150,181 +150,6 @@ body {
     }
 }
 
-/* Search Section - Enhanced for Mobile Scroll Behavior */
-.search-section {
-    background: white;
-    padding: 20px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    width: 100%;
-    overflow-x: hidden;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-}
-
-/* Mobile-specific sticky behavior */
-@media (max-width: 767px) {
-
-    /* Keep the main header in normal flow */
-    .header {
-        position: relative;
-        z-index: 1;
-    }
-
-    /* Search section starts as normal sticky */
-    .search-section {
-        position: sticky;
-        top: 0;
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 100;
-        transform: translateY(0);
-    }
-
-    /* Enhanced styling when sticky behavior activates */
-    .search-section.sticky-active {
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.95);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Hidden state when scrolling down */
-    .search-section.scroll-hidden {
-        transform: translateY(-100%);
-    }
-
-    /* Visible state when scrolling up with enhanced shadow */
-    .search-section.scroll-visible {
-        transform: translateY(0);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        background: rgba(255, 255, 255, 0.98);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-    }
-
-    /* Smooth transition for all transform changes */
-    .search-section * {
-        transition: all 0.3s ease;
-    }
-
-    /* Main content padding remains normal */
-    .main-content {
-        padding-top: 30px;
-    }
-}
-
-.search-controls {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    width: 100%;
-}
-
-.search-input-container {
-    position: relative;
-    width: 100%;
-}
-
-.search-input-container input {
-    width: 100%;
-    padding: 12px 45px 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-}
-
-.search-input-container input:focus {
-    outline: none;
-    border-color: #2d5a3d;
-}
-
-.search-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-    font-size: 1.2rem;
-}
-
-/* Filter Controls Row */
-.filter-controls {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    width: 100%;
-}
-
-/* Vehicle Filter */
-#vehicleFilter {
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    background: white;
-    cursor: pointer;
-    font-weight: 500;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#vehicleFilter:focus {
-    outline: none;
-    border-color: #2d5a3d;
-    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
-}
-
-#vehicleFilter optgroup {
-    font-weight: 600;
-    color: #2d5a3d;
-    font-style: normal;
-    background-color: #f8f9fa;
-}
-
-#vehicleFilter option {
-    font-weight: 400;
-    color: #333;
-    padding: 8px 12px;
-}
-
-#systemFilter {
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    background: white;
-    cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#systemFilter:focus {
-    outline: none;
-    border-color: #2d5a3d;
-}
-
-#intervalFilter {
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    background: white;
-    cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#intervalFilter:focus {
-    outline: none;
-    border-color: #2d5a3d;
-}
-
 /* Vehicle Information Section */
 .vehicle-info-section {
     background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
@@ -1189,52 +1014,12 @@ body {
 
 /* Desktop Responsive Breakpoints */
 @media (min-width: 768px) {
-    .search-controls {
-        grid-template-columns: 2fr 1fr;
-        gap: 15px;
-    }
-
-    .filter-controls {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 15px;
-    }
-
-    .info-btn {
-        width: auto;
-        justify-content: flex-start;
-    }
-
     .copy-btn {
         width: auto;
     }
 
-    /* Reset mobile scroll behavior on desktop */
-    .search-section {
-        position: sticky !important;
-        transform: none !important;
-        background: white !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        border-bottom: none !important;
-    }
-
-    .main-content {
-        padding-top: 30px !important;
-    }
-
     .vehicle-info-section {
         margin-top: 0 !important;
-    }
-}
-
-@media (min-width: 1024px) {
-    .search-controls {
-        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-        align-items: start;
-    }
-
-    .filter-controls {
-        display: contents;
     }
 }
 
@@ -1256,10 +1041,6 @@ body {
 
     .header-text p {
         font-size: 0.8rem;
-    }
-
-    .search-section {
-        padding: 15px 0;
     }
 
     .vehicle-info-header {
@@ -1341,10 +1122,6 @@ body {
         font-size: 1.5rem;
     }
 
-    .search-input-container input {
-        font-size: 16px;
-        /* Prevents zoom on iOS */
-    }
 }
 
 /* ========================================
@@ -1526,54 +1303,6 @@ body {
 
 .dark-mode {
     background-color: #121212;
-    color: #e0e0e0;
-}
-
-.dark-mode .search-section {
-    background: #1e1e1e;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-
-.dark-mode .search-section.sticky-active,
-.dark-mode .search-section.scroll-visible {
-    background: rgba(30,30,30,0.97) !important;
-}
-
-.dark-mode .search-input-container input {
-    background: #2d2d2d;
-    border-color: #444;
-    color: #e0e0e0;
-}
-
-.dark-mode .search-input-container input::placeholder {
-    color: #777;
-}
-
-.dark-mode .search-input-container input:focus {
-    border-color: #4caf50;
-}
-
-.dark-mode #vehicleFilter,
-.dark-mode #systemFilter,
-.dark-mode #intervalFilter {
-    background: #2d2d2d;
-    border-color: #444;
-    color: #e0e0e0;
-}
-
-.dark-mode #vehicleFilter:focus,
-.dark-mode #systemFilter:focus,
-.dark-mode #intervalFilter:focus {
-    border-color: #4caf50;
-}
-
-.dark-mode #vehicleFilter optgroup {
-    background-color: #2d2d2d;
-    color: #81c784;
-}
-
-.dark-mode #vehicleFilter option {
-    background: #2d2d2d;
     color: #e0e0e0;
 }
 
@@ -2569,7 +2298,6 @@ select,
 .btn,
 .copy-btn,
 .info-btn,
-.search-section,
 .vehicle-info-section,
 .inspection-strip,
 .tm-link,
@@ -2658,61 +2386,6 @@ select,
 .dark-mode-toggle:hover {
     background: rgba(255, 255, 255, 0.14);
     transform: translateY(-1px);
-}
-
-.search-section {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
-}
-
-.search-section.sticky-active,
-.search-section.scroll-visible {
-    background: var(--surface-strong) !important;
-    border-bottom-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
-}
-
-.search-controls,
-.filter-controls {
-    gap: 14px;
-}
-
-.search-input-container input,
-#vehicleFilter,
-#systemFilter,
-#intervalFilter {
-    min-height: 52px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: var(--surface-strong);
-    color: var(--text);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.search-input-container input::placeholder {
-    color: var(--text-muted);
-}
-
-.search-input-container input:hover,
-#vehicleFilter:hover,
-#systemFilter:hover,
-#intervalFilter:hover {
-    border-color: var(--border-strong);
-}
-
-.search-input-container input:focus,
-#vehicleFilter:focus,
-#systemFilter:focus,
-#intervalFilter:focus {
-    border-color: rgba(126, 163, 125, 0.88);
-    box-shadow: 0 0 0 4px rgba(126, 163, 125, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.45);
-}
-
-.search-icon {
-    color: var(--text-soft);
 }
 
 .vehicle-info-section,
@@ -3170,10 +2843,6 @@ select,
     border-bottom-color: rgba(185, 209, 180, 0.08);
 }
 
-.dark-mode .search-input-container input,
-.dark-mode #vehicleFilter,
-.dark-mode #systemFilter,
-.dark-mode #intervalFilter,
 .dark-mode .btn-secondary,
 .dark-mode .copy-value,
 .dark-mode .procedure-content,
@@ -3284,10 +2953,6 @@ select,
         font-size: clamp(2rem, 8vw, 2.35rem);
     }
 
-    .search-section {
-        padding: 14px 0;
-    }
-
     .item-card,
     .modal-body,
     .category-body,
@@ -3356,7 +3021,10 @@ select,
 /* Print Styles */
 @media print {
 
-    .search-section,
+    .appbar,
+    .index-rail,
+    .fab,
+    .snackbar,
     .copy-btn,
     .modal,
     .vehicle-info-section {

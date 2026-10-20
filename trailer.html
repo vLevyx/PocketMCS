@@ -3,12 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketMCS &mdash; M1095 Trailer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>PocketMCS &mdash; Trailers</title>
+    <meta name="description" content="M1095 trailer PMCS lookup — TM 9-2330-392-13&P item numbers, procedures and deadline criteria.">
+    <meta name="theme-color" content="#1e3424">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="PocketMCS">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="ui.css">
 </head>
 
-<body>
+<body class="equipment-page" data-platform="trailer">
+    <script>try{var d=localStorage.getItem('pocketmcs-darkmode');if(d==='true'||(d===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches))document.body.classList.add('dark-mode')}catch(e){}</script>
+    <a class="skip-link" href="#results">Skip to PMCS items</a>
+
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -27,48 +40,7 @@
             </div>
         </div>
     </header>
-
-    <!-- Search and Filter Controls -->
-    <div class="search-section">
-        <div class="container">
-            <div class="search-controls">
-                <div class="search-input-container">
-                    <input type="text" id="searchInput"
-                        placeholder="Describe the fault (e.g., 'flat tire', 'lunette cracked', 'brake drag')...">
-                    <span class="search-icon">🔍</span>
-                </div>
-
-                <select id="vehicleFilter">
-                    <option value="all">M1095 — 5-Ton, 2-Axle, Full Trailer</option>
-                </select>
-
-                <select id="systemFilter">
-                    <option value="all">All Systems</option>
-                    <option value="brakes">Brakes</option>
-                    <option value="tires/wheels">Tires/Wheels</option>
-                    <option value="electrical">Electrical</option>
-                    <option value="body/frame">Body/Frame</option>
-                    <option value="fluid systems">Fluid Systems</option>
-                    <option value="safety systems">Safety Systems</option>
-                    <option value="suspension">Suspension</option>
-                </select>
-
-                <select id="intervalFilter">
-                    <option value="all">All Intervals</option>
-                    <option value="before">Before</option>
-                    <option value="during">During</option>
-                    <option value="after">After</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-
-                <button id="intervalInfoBtn" class="info-btn" title="Learn about PMCS intervals">
-                    <img src="images/interval.png" alt="PMCS Intervals" class="interval-icon">
-                    PMCS Intervals
-                </button>
-            </div>
-        </div>
-    </div>
+    <div class="header-sentinel" aria-hidden="true"></div>
 
     <!-- Inspection Strip -->
     <div class="inspection-strip">
@@ -78,45 +50,46 @@
         </div>
     </div>
 
-    <!-- Trailer Information Display (static — always M1095) -->
-    <div id="vehicleInfo" class="vehicle-info-section" style="display: none;">
-        <div class="container">
-            <div class="vehicle-info-content">
-                <div class="vehicle-info-header">
-                    <span class="vehicle-icon">
-                        <img src="images/trailer.png" alt="Trailer" class="vehicle-icon-img">
-                    </span>
-                    <div class="vehicle-details">
-                        <h3 id="vehicleTitle">M1095 — 5-Ton, 2-Axle, Full Trailer</h3>
-                        <p id="vehicleDescription">5-ton capacity full trailer for use with LMTV/FMTV series towing vehicles</p>
+    <!-- Sticky app bar: search + quick filters -->
+    <div class="appbar" id="appbar">
+        <div class="appbar-top">
+            <div class="container">
+                <div class="appbar-row">
+                    <a href="index.html" class="appbar-back" aria-label="Back to Home">&#8592;</a>
+                    <div class="searchbar" role="search">
+                        <span class="searchbar-icon" aria-hidden="true">🔍</span>
+                        <input type="search" id="searchInput" enterkeyhint="search" autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false" placeholder="Search faults or item #"
+                            aria-label="Search Trailers PMCS by fault, part, or item number" aria-controls="searchPanel" aria-expanded="false">
+                        <button class="searchbar-clear" id="searchClear" type="button" aria-label="Clear search" hidden>✕</button>
                     </div>
-                    <div class="vehicle-stats">
-                        <span id="applicableItems" class="stat-badge">0 Items</span>
-                    </div>
+                    <button class="filter-btn" id="filterBtn" type="button" aria-haspopup="dialog" aria-label="Filters">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+                        <span class="filter-btn-label">Filters</span>
+                        <span class="filter-badge" id="filterBadge" hidden>0</span>
+                    </button>
                 </div>
+            </div>
+            <div class="appbar-progress" id="scrollProgress"></div>
+        </div>
+        <div class="appbar-chips">
+            <div class="container">
+                <div class="chiprow" id="chipRow" role="toolbar" aria-label="Quick filters"></div>
             </div>
         </div>
+        <div class="search-panel" id="searchPanel" hidden></div>
     </div>
-
-    <!-- Results Section -->
-    <main class="main-content">
+    <main class="main-content" id="main">
         <div class="container">
-            <div id="resultsContainer" class="results-container"></div>
-            <div id="noResults" class="no-results" style="display: none;">
-                <div class="no-results-icon">⚠️</div>
-                <p>No items found matching your search criteria.</p>
-                <div class="no-results-suggestions">
-                    <p><strong>Try:</strong></p>
-                    <ul>
-                        <li>Clearing your system or interval filters</li>
-                        <li>Using different search terms (e.g., "tire", "coupling", "brakes")</li>
-                        <li>Checking for typos in your search</li>
-                        <li>Searching by system (e.g., "Brakes", "Electrical", "Safety Systems")</li>
-                    </ul>
-                </div>
-            </div>
+            <div class="variant-banner" id="variantBanner" hidden></div>
+            <div class="results-meta" id="resultsMeta" aria-live="polite"></div>
+            <div class="results-list" id="results" tabindex="-1"></div>
+            <div class="no-results" id="noResults" hidden></div>
         </div>
     </main>
+
+    <nav class="index-rail" id="indexRail" aria-hidden="true" hidden></nav>
+    <button class="fab" id="backToTop" type="button" aria-label="Back to top">&#8593;</button>
 
     <!-- Copy Modal -->
     <div id="copyModal" class="modal" style="display: none;">
@@ -203,7 +176,7 @@
                     </p>
                 </div>
                 <div class="footer-bottom">
-                    <p class="footer-version">PocketMCS v2.0.0 | For U.S. Army M1095 5-Ton Trailer</p>
+                    <p class="footer-version">PocketMCS v3.0.0 | For U.S. Army M1095 5-Ton Trailer</p>
                     <p class="footer-update">Data accurate as of April 2025</p>
                 </div>
             </div>
@@ -281,7 +254,10 @@
         </div>
     </div>
 
-    <script src="trailer-script.js"></script>
+    <script src="js/search.js"></script>
+    <script src="data/trailer.js"></script>
+    <script src="js/shell.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,23 @@
+{
+    "name": "PocketMCS — PMCS Reference",
+    "short_name": "PocketMCS",
+    "description": "Pocket PMCS reference for HMMWV, LMTV/FMTV, Tactical Quiet Generators and M1095 trailers — find item numbers fast, even offline.",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#1e3424",
+    "theme_color": "#1e3424",
+    "categories": ["utilities", "productivity", "reference"],
+    "icons": [
+        { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "HMMWV", "url": "./humvee.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "LMTV / FMTV", "url": "./lmtv.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Generators", "url": "./gen.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Trailers", "url": "./trailer.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+    ]
+}
