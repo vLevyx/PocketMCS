@@ -4,7 +4,7 @@
 // Bump VERSION whenever any precached file changes.
 // ========================================
 
-const VERSION = 'pocketmcs-v4.0.1';
+const VERSION = 'pocketmcs-v4.1.0';
 const FONT_CACHE = 'pocketmcs-fonts';
 
 const PRECACHE = [

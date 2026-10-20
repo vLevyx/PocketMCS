@@ -2824,3 +2824,117 @@ button.fault-tag {
         backdrop-filter: none;
     }
 }
+
+/* ============ Inspection: back/undo + resume ============ */
+
+.insp-back-btn {
+    flex: none;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(241, 228, 199, 0.12);
+    border: 1px solid rgba(241, 228, 199, 0.2);
+    color: var(--on-chrome);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.insp-back-label {
+    display: none;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+@media (min-width: 420px) {
+    .insp-back-label {
+        display: inline;
+    }
+}
+
+.insp-prev-mark {
+    margin: -4px 0 14px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-container);
+    color: var(--on-surface-variant);
+    font-size: 0.9rem;
+}
+
+.insp-prev-mark.status-pass strong { color: var(--ok); }
+.insp-prev-mark.status-deficiency strong { color: var(--deadline); }
+.insp-prev-mark.status-skip strong { color: var(--on-surface); }
+
+.insp-enter-back {
+    animation: insp-in-back var(--dur-3) var(--ease-emphasized);
+}
+
+@keyframes insp-in-back {
+    from { opacity: 0; transform: translateX(-28px); }
+}
+
+.insp-resume-card {
+    margin-bottom: 16px;
+    padding: 14px 16px 16px;
+    border-radius: var(--radius-lg);
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    border-left: 4px solid var(--gold);
+}
+
+.insp-resume-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.insp-resume-meta {
+    margin-top: 2px;
+    font-size: 0.92rem;
+}
+
+.insp-resume-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.insp-resume-actions .btn-secondary {
+    background: var(--surface);
+    color: var(--on-surface);
+}
+
+/* ============ Expand / collapse all ============ */
+
+.results-meta {
+    align-items: center;
+}
+
+.results-meta-text {
+    min-width: 0;
+}
+
+.meta-action {
+    flex: none;
+    min-height: 44px;
+    padding: 0 12px;
+    margin-right: -8px;
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.meta-action:hover {
+    background: var(--primary-container);
+}

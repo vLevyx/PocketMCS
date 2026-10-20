@@ -396,8 +396,30 @@
         }
         if (state.system !== 'all') parts.push(esc(SYSTEMS.find(s => s.toLowerCase() === state.system)));
         if (state.variant !== 'all') parts.push(esc(VARIANTS.get(state.variant).split(/[ /]/)[0]));
-        els.meta.innerHTML = `<span>${parts.join(' · ')}</span>` +
-            (query && count > 1 ? '<span class="results-meta-hint">Sorted by relevance</span>' : '');
+        els.meta.innerHTML = `<span class="results-meta-text">${parts.join(' · ')}${query && count > 1 ? '<span class="results-meta-hint"> · by relevance</span>' : ''}</span>` +
+            (count > 1 ? '<button type="button" class="meta-action" data-action="toggle-all">Expand all</button>' : '');
+        syncToggleAll();
+    }
+
+    function visibleRows() {
+        return Array.from(els.results.querySelectorAll('.item-row:not([hidden])')).map(el => rows.get(el.dataset.key));
+    }
+
+    // Label reflects the next action: expand if anything visible is closed.
+    function syncToggleAll() {
+        const btn = els.meta.querySelector('[data-action="toggle-all"]');
+        if (!btn) return;
+        const anyClosed = visibleRows().some(row => !row.el.classList.contains('is-open'));
+        btn.textContent = anyClosed ? 'Expand all' : 'Collapse all';
+        btn.setAttribute('aria-label', anyClosed ? 'Expand all visible items' : 'Collapse all visible items');
+    }
+
+    function toggleAll() {
+        const list = visibleRows();
+        const open = list.some(row => !row.el.classList.contains('is-open'));
+        list.forEach(row => setExpanded(row, open));
+        shell.haptic(5);
+        syncToggleAll();
     }
 
     function updateNoResults(count, query) {
@@ -441,6 +463,7 @@
         const scroller = els.chipRow;
         const scrollLeft = scroller.scrollLeft;
         scroller.innerHTML = chips.join('');
+        syncInspectLabels();
         scroller.scrollLeft = scrollLeft;
 
         const count = activeFilterCount() - (state.interval !== 'all' ? 1 : 0);
@@ -973,8 +996,74 @@
     // Guided inspection mode (ported from the original per-page apps)
     // ----------------------------------------
 
-    const insp = { items: [], index: 0, results: [] };
+    const insp = { items: [], index: 0, results: [], intervals: '', startedAt: 0 };
     const inspEl = id => document.getElementById(id);
+    const INSP_KEY = `pocketmcs-inspection-${platform.id}`;
+    const INSP_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+    const STATUS_NAME = { pass: 'Pass', deficiency: 'Deficiency', skip: 'Skipped' };
+
+    // ---- Persistence: progress survives reloads, locked phones and Exit ----
+
+    function saveInspection() {
+        shell.storage.set(INSP_KEY, JSON.stringify({
+            v: 1,
+            startedAt: insp.startedAt,
+            updatedAt: Date.now(),
+            intervals: insp.intervals,
+            keys: insp.items.map(item => item.itemNumber),
+            results: insp.results.map(r => ({ key: r.item.itemNumber, status: r.status })),
+            index: insp.index
+        }));
+    }
+
+    function clearSavedInspection() {
+        shell.storage.set(INSP_KEY, '');
+    }
+
+    function loadSavedInspection() {
+        const saved = shell.storage.getJSON(INSP_KEY, null);
+        if (!saved || saved.v !== 1 || !Array.isArray(saved.keys)) return null;
+        if (Date.now() - (saved.updatedAt || 0) > INSP_MAX_AGE) { clearSavedInspection(); return null; }
+        const byKey = new Map(platform.items.map(item => [item.itemNumber, item]));
+        const items = saved.keys.map(key => byKey.get(key)).filter(Boolean);
+        if (!items.length) return null;
+        const results = (saved.results || [])
+            .filter(r => byKey.has(r.key) && STATUS_NAME[r.status])
+            .map(r => ({ item: byKey.get(r.key), status: r.status }));
+        return {
+            items, results,
+            index: Math.min(results.length, items.length),
+            intervals: saved.intervals || '',
+            startedAt: saved.startedAt || Date.now()
+        };
+    }
+
+    function intervalsLabel(list) {
+        return list.split(',').filter(Boolean).map(key => {
+            const match = INTERVALS.find(([k]) => k === key.trim());
+            return match ? match[1] : key;
+        }).join(' + ');
+    }
+
+    function savedSummary(saved) {
+        const deficiencies = saved.results.filter(r => r.status === 'deficiency').length;
+        const done = saved.index >= saved.items.length;
+        const started = new Date(saved.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return [
+            intervalsLabel(saved.intervals) || 'Inspection',
+            done ? 'complete' : `item ${saved.index + 1} of ${saved.items.length}`,
+            `${deficiencies} ${deficiencies === 1 ? 'deficiency' : 'deficiencies'}`,
+            `started ${started}`
+        ].join(' · ');
+    }
+
+    function syncInspectLabels() {
+        const resumable = !!loadSavedInspection();
+        const startBtn = inspEl('startInspectionBtn');
+        if (startBtn) startBtn.textContent = resumable ? '📋 Resume Inspection' : '📋 Start Inspection';
+        const chip = els.chipRow.querySelector('[data-tool="inspect"]');
+        if (chip) chip.textContent = resumable ? '📋 Resume' : '📋 Inspect';
+    }
 
     function initInspection() {
         const setup = inspEl('inspectionSetupModal');
@@ -982,42 +1071,99 @@
         inspEl('startInspectionBtn')?.addEventListener('click', openInspectionSetup);
         document.querySelectorAll('.insp-setup-btn').forEach(btn =>
             btn.addEventListener('click', () => startInspection(btn.dataset.intervals)));
+        setup?.addEventListener('click', (e) => {
+            const action = e.target.closest('[data-insp]');
+            if (!action) return;
+            if (action.dataset.insp === 'resume') {
+                shell.closeModal(setup);
+                resumeInspection();
+            } else if (action.dataset.insp === 'discard') {
+                clearSavedInspection();
+                inspEl('inspResumeCard')?.remove();
+                syncInspectLabels();
+                shell.snackbar('Saved inspection discarded');
+            }
+        });
         inspEl('exitInspectionBtn')?.addEventListener('click', exitInspection);
+        inspEl('inspBackBtn')?.addEventListener('click', undoInspection);
         inspEl('inspPass')?.addEventListener('click', () => markInspection('pass'));
         inspEl('inspDeficiency')?.addEventListener('click', () => markInspection('deficiency'));
         inspEl('inspSkip')?.addEventListener('click', () => markInspection('skip'));
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && inspEl('inspectionMode')?.classList.contains('is-open') && !shell.topModal()) exitInspection();
         });
+
+        syncInspectLabels();
+        const saved = loadSavedInspection();
+        if (saved && saved.results.length && saved.index < saved.items.length) {
+            setTimeout(() => shell.snackbar(`Inspection in progress — item ${saved.index + 1} of ${saved.items.length}`,
+                { label: 'Resume', onClick: resumeInspection }), 600);
+        }
     }
 
     function openInspectionSetup() {
-        shell.openModal(inspEl('inspectionSetupModal'));
+        const setup = inspEl('inspectionSetupModal');
+        inspEl('inspResumeCard')?.remove();
+        const saved = loadSavedInspection();
+        if (saved) {
+            const card = document.createElement('div');
+            card.className = 'insp-resume-card';
+            card.id = 'inspResumeCard';
+            card.innerHTML = `
+                <p class="insp-resume-title">Resume inspection</p>
+                <p class="insp-resume-meta">${esc(savedSummary(saved))}</p>
+                <div class="insp-resume-actions">
+                    <button type="button" class="btn btn-primary" data-insp="resume">Resume</button>
+                    <button type="button" class="btn btn-secondary" data-insp="discard">Start over</button>
+                </div>`;
+            setup.querySelector('.modal-body').prepend(card);
+        }
+        shell.openModal(setup, saved ? setup.querySelector('[data-insp="resume"]') : null);
+    }
+
+    function openInspectionOverlay() {
+        const overlay = inspEl('inspectionMode');
+        if (overlay.classList.contains('is-open')) return;
+        overlay.style.display = 'flex';
+        shell.scrollLock.lock();
+        requestAnimationFrame(() => overlay.classList.add('is-open'));
     }
 
     function startInspection(intervalList) {
         const intervals = intervalList.split(',').map(i => i.trim().toLowerCase());
-        insp.items = platform.items.filter(item =>
+        const items = platform.items.filter(item =>
             intervals.includes(intervalOf(item)) &&
             (state.system === 'all' || (item.system || '').toLowerCase() === state.system) &&
             platform.matchesVariant(item, state.variant) &&
             (!platform.inspectionFilter || platform.inspectionFilter(item)));
-        insp.index = 0;
-        insp.results = [];
         shell.closeModal(inspEl('inspectionSetupModal'));
-        if (!insp.items.length) {
+        if (!items.length) {
             shell.snackbar('No items match your current filters for that interval');
             return;
         }
-        const overlay = inspEl('inspectionMode');
-        overlay.style.display = 'flex';
-        shell.scrollLock.lock();
-        requestAnimationFrame(() => overlay.classList.add('is-open'));
+        Object.assign(insp, { items, index: 0, results: [], intervals: intervals.join(','), startedAt: Date.now() });
+        saveInspection();
+        syncInspectLabels();
+        openInspectionOverlay();
         inspEl('inspectionActions').style.display = '';
         showInspectionItem(0);
     }
 
-    function showInspectionItem(direction) {
+    function resumeInspection() {
+        const saved = loadSavedInspection();
+        if (!saved) {
+            shell.snackbar('No saved inspection to resume');
+            syncInspectLabels();
+            return;
+        }
+        Object.assign(insp, saved);
+        openInspectionOverlay();
+        inspEl('inspectionActions').style.display = '';
+        showInspectionItem(0);
+    }
+
+    function showInspectionItem(direction, previousStatus) {
+        inspEl('inspBackBtn').hidden = insp.index === 0;
         if (insp.index >= insp.items.length) { showInspectionSummary(); return; }
         const item = insp.items[insp.index];
         const total = insp.items.length;
@@ -1025,16 +1171,17 @@
         inspEl('inspectionProgressFill').style.width = `${Math.round((insp.index / total) * 100)}%`;
         inspEl('inspectionIntervalLabel').textContent = item.interval.toUpperCase();
         const content = inspEl('inspectionContent');
-        content.innerHTML = inspectionCard(item);
+        content.innerHTML = inspectionCard(item, previousStatus);
         content.scrollTop = 0;
-        if (direction) {
-            const card = content.firstElementChild;
-            card.classList.add('insp-enter');
-        }
+        if (direction) content.firstElementChild.classList.add(direction < 0 ? 'insp-enter-back' : 'insp-enter');
     }
 
-    function inspectionCard(item) {
+    function inspectionCard(item, previousStatus) {
+        const previous = previousStatus
+            ? `<p class="insp-prev-mark status-${previousStatus}">Previously marked: <strong>${STATUS_NAME[previousStatus]}</strong> — choose again</p>`
+            : '';
         return `<div class="insp-card">
+            ${previous}
             <div class="insp-card-header">
                 <span class="row-num insp-plate">${esc(displayNumber(item))}</span>
                 <div class="insp-card-heading">
@@ -1053,10 +1200,22 @@
     }
 
     function markInspection(status) {
+        if (insp.index >= insp.items.length) return;
         insp.results.push({ item: insp.items[insp.index], status });
         insp.index++;
+        saveInspection();
         shell.haptic(status === 'deficiency' ? 12 : 5);
         showInspectionItem(1);
+    }
+
+    function undoInspection() {
+        if (insp.index === 0 || !insp.results.length) return;
+        const previous = insp.results.pop();
+        insp.index = insp.results.length;
+        saveInspection();
+        shell.haptic(4);
+        inspEl('inspectionActions').style.display = '';
+        showInspectionItem(-1, previous.status);
     }
 
     function showInspectionSummary() {
@@ -1087,7 +1246,7 @@
             </div>
             <div class="summary-deficiencies"><h3>Deficiencies Found</h3>${defHtml}</div>
             ${deficiencies.length ? '<button class="copy-btn insp-summary-btn" id="copyDefBtn" type="button">📋 Copy Deficiencies for 5988-E</button>' : ''}
-            <button class="btn btn-secondary insp-summary-btn" id="exitInspSummaryBtn" type="button">Exit Inspection</button>
+            <button class="btn btn-secondary insp-summary-btn" id="exitInspSummaryBtn" type="button">Finish Inspection</button>
         </div>`;
         content.scrollTop = 0;
         inspEl('copyDefBtn')?.addEventListener('click', () => copyDeficiencies(deficiencies));
@@ -1111,13 +1270,20 @@
     function exitInspection() {
         const overlay = inspEl('inspectionMode');
         if (!overlay.classList.contains('is-open')) return;
+        const finished = insp.index >= insp.items.length;
+        const position = `item ${insp.index + 1} of ${insp.items.length}`;
         overlay.classList.remove('is-open');
         shell.scrollLock.unlock();
         setTimeout(() => { if (!overlay.classList.contains('is-open')) overlay.style.display = 'none'; }, 250);
         inspEl('inspectionActions').style.display = '';
-        insp.items = [];
-        insp.index = 0;
-        insp.results = [];
+        if (finished) {
+            clearSavedInspection();
+        } else {
+            saveInspection();
+            shell.snackbar(`Inspection saved — ${position}`, { label: 'Resume', onClick: resumeInspection });
+        }
+        Object.assign(insp, { items: [], index: 0, results: [] });
+        syncInspectLabels();
     }
 
     // ----------------------------------------
@@ -1142,8 +1308,13 @@
             } else if (head) {
                 const open = !row.el.classList.contains('is-open');
                 setExpanded(row, open, { reveal: open });
+                syncToggleAll();
                 if (open && state.q.trim()) saveRecent(state.q);
             }
+        });
+
+        els.meta.addEventListener('click', (e) => {
+            if (e.target.closest('[data-action="toggle-all"]')) toggleAll();
         });
 
         els.chipRow.addEventListener('click', (e) => {
